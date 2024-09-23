@@ -7,10 +7,15 @@ from .models import Menu, Booking
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 
 class MenuItemView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         items = Menu.objects.all()
         serializer = MenuSerializer(items, many=True)
@@ -24,6 +29,9 @@ class MenuItemView(APIView):
 
 
 class SingleMenuItemView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, id):
         item = get_object_or_404(Menu, pk=id)
         serializer = MenuSerializer(item)
@@ -45,5 +53,12 @@ class SingleMenuItemView(APIView):
 
 
 class BookingViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+
+
+@api_view()
+@permission_classes([IsAuthenticated])
+def msg(request):
+    return Response({"message": "This view is protected"})
